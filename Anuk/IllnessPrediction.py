@@ -22,9 +22,6 @@ userDataFile=open("reg_result.txt", 'r')
 userData=userDataFile.readline()
 dataSplit=userData.split()
 
-for i in dataSplit:
-    print(i)
-
 age = int(dataSplit[0])
 obese = int(dataSplit[3])
 vax = int(dataSplit[4])
@@ -55,11 +52,11 @@ predict.iloc[[0],[9]] = anti
 predict.iloc[[0],[10]] = dia
 predict.iloc[[0],[11]] = heart
 
-print(predict)
+#print(predict)
 
 illnessResult=lr.predict(predict)
 
-print(illnessResult)
+#print(illnessResult)
 
 
 userDataFile.close()
