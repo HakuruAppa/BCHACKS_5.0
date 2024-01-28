@@ -15,5 +15,5 @@ telegram
 python-telegram-bot
 asyncio
 
-
+Used wix web development to make something interactive for the judges within the given time frame of the hackathon
 
