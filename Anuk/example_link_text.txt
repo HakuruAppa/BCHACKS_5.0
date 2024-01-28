@@ -1,0 +1,14 @@
+24 0 0 1 1 23 1 0 0 0 0
+
+#explanation
+24 - age
+0 - over65
+0 -under5
+1 - medically obese
+1 - vaccinated
+23 - artificial sunlight exposure level %
+1 - taking immunity supplements
+0 - healthy sleep cycle
+0 - antibodies (e.g: got sick recently)
+0 - diabetic
+0 - history of heart disease
