@@ -8,15 +8,20 @@ NAME, ID_NUMBER = range(2)
 #Arrays
 commands = [
     ('/start', 'Intializes the bot'), ('/help', 'Lists all known commands'), ('/status', 'Provides your current health status'), 
-    ('/register', 'Intiates registration process'), ('regCancel', 'Cancels the registration process'),
+    ('/register', 'Intiates registration process'), ('/regCancel', 'Cancels the registration process'), ('/examination', 'Begins your risk assesment')
 
 ]
-user_data = [] #stores user information
+user_data_array = [] #stores name and id, currently UNUSED
+user_info_array = [] #stores data for back-end
 
 #Misc functions, formatting etc
 def format_help_command(commands):
     return '\n'.join([f'{command}: {description}' for command, description in commands])
 
+def to_text_file(user_data): #stores data into txt file then backend prediction
+    with open('user_info.txt', 'w') as file:
+        for user_data in user_data_array:
+            file.write 
 #Commands
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Hello!, I am Eunai. How can I help you today?\n')
@@ -55,7 +60,7 @@ async def get_id_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     completion_msg = f'Registration is now complete.\nVerify your information. If you need to make changes, re-initiate the registration process' 
     userId_msg = f'\n Username: {context.user_data["name"]}\nID_Number: {user_id}'
     user_name = context.user_data.get('name', 'not provided')
-    user_data.append({'Name': user_name}, {'ID_Number': user_id}) #stores username and id into user_data array
+    user_data_array.append({'Name': user_name}, {'ID_Number': user_id}) #stores username and id into user_data array
 
     await update.message.reply_text(completion_msg)
     await update.message.reply_text(userId_msg)
@@ -64,6 +69,38 @@ async def get_id_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def regCancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Registration has been cancelled...\nComplete registration to continue using Eunai')
     return ConversationHandler.END #ends convo
+
+async def examination_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('We will begin your analysis now.') #actual bullshit
+    await update.message.reply_text('\nAs per section 296 of the Space Station Criminal Code. Individuals must answer truthfully')
+    await update.message.reply_text('\nIndividuals found with fraudulent data will be prosecuted and subject to interrogation and excecution')
+    await update.message.reply_text('\nUphold your integrity. May the stars bless you, we are watching')
+    return AGE
+
+async def get_age(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('Please enter your age')
+    user_age = (update.message.text)
+    if user_age.isdigit():
+        if user_age > 0:
+            is_over_65 = 1 if user_age > 65 else 0
+            is_under_5 = 1 if user_age < 5 else 0
+            age_temp = {
+                'age' : user_age, 'is_over_65': is_over_65, 'is_under_5' : is_under_5
+            }
+            user_data_array.append(age_temp)
+            await update.message.reply_text('Thank you, lets proceed.')
+            return MEDICALLY_OBESE
+    else:
+        await update.message.reply_text('Invalid input. Please enter a valid age')
+        return AGE
+
+async def get_obese(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('Are you medically obese?\n 1 for Yes, 0 for No')
+    user_usa = update.message.text
+    if user_usa == '1' or user_usa == '0':
+        context.user_data['obese'] = int(user_usa)
+        await update.message.text_reply(f'Medically Obese: {user_usa} - Recorded')
+
 #Responses 
 def handle_response(text: str) -> str:
     processed: str = text.lower()
@@ -115,6 +152,24 @@ if __name__ == '__main__':
         fallbacks = [CommandHandler('regCancel', regCancel)]
     )
     app.add_handler(convo_handler)
+    #questions for back-end processing 
+    #has to return reg_result.txt
+    information_handler = ConversationHandler(
+        entry_points = [CommandHandler('examination', examination_command)],
+        states ={
+            AGE:
+            MEDICALLY_OBESE:
+            VACCINATED:
+            ASE_LEVEL:
+            IMMUNITY_SUPP:
+            HEALTHY_SLEEP_CYCLE:
+            ANTIBODIES:
+            DIABETIC:
+            HTRY_HEART:
+        },
+        fallbacks = [CommandHandler('examCancel', exam_cancel_command)]
+    )
+    app.add_handler(information_handler)
 
     #Messages
     app.add_handler(MessageHandler(filters.TEXT, handle_message))
