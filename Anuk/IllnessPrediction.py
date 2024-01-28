@@ -16,20 +16,24 @@ X_train,X_test,Y_train,Y_test=train_test_split(X,Y,train_size = 0.90, random_sta
 lr = LinearRegression()
 lr.fit(X_train,Y_train)
 
-print(X_train[:10])
 data_new = X_train[:10]
-print(lr.predict(data_new))
-print(Y_train[:10])
 
-age = int(input("Age: "))
-obese = int(input("Obese: "))
-vax = int(input("Vax: "))
-sun = int(input("sun: "))
-sup = int(input("sup: "))
-sleep = int(input("sleep: "))
-anti = int(input("anti: "))
-dia = int(input("dia: "))
-heart = int(input("heart: "))
+userDataFile=open("user_info.txt", 'r')
+userData=userDataFile.readline()
+dataSplit=userData.split()
+
+for i in dataSplit:
+    print(i)
+
+age = int(dataSplit[0])
+obese = int(dataSplit[3])
+vax = int(dataSplit[4])
+sun = int(dataSplit[5])
+sup = int(dataSplit[6])
+sleep = int(dataSplit[7])
+anti = int(dataSplit[8])
+dia = int(dataSplit[9])
+heart = int(dataSplit[10])
 
 over65=0
 under5=0
@@ -53,6 +57,15 @@ predict.iloc[[0],[11]] = heart
 
 print(predict)
 
-print(lr.predict(predict))
+illnessResult=lr.predict(predict)
 
+print(illnessResult)
+
+
+userDataFile.close()
+
+resultFile = open('result.txt', 'w')
+result=illnessResult.astype(str)
+resultFile.write(result[0])
+resultFile.close()  
 
