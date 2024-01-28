@@ -5,6 +5,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 TOKEN: Final = '6818698464:AAExduA8qUwEWa3wl1i_M2gK3OVF2Uv0-Fk'
 BOT_USERNAME: Final = '@EunaiBot'
 NAME, ID_NUMBER = range(2)
+AGE, MEDICALLY_OBESE, VACCINATED, ASE_LEVEL, IMMUNITY_SUPP, HEALTHY_SLEEP_CYCLE, ANTIBODIES, DIABETIC, HTRY_HEART = range(9)
 #Arrays
 commands = [
     ('/start', 'Intializes the bot'), ('/help', 'Lists all known commands'), ('/status', 'Provides your current health status'), 
@@ -87,8 +88,8 @@ async def get_age(update: Update, context: ContextTypes.DEFAULT_TYPE):
             age_temp = {
                 'age' : user_age, 'is_over_65': is_over_65, 'is_under_5' : is_under_5
             }
-            user_data_array.append(age_temp)
-            await update.message.reply_text('Thank you, lets proceed.')
+            user_info_array.append(age_temp)
+            await update.message.reply_text('Response recorded.')
             return MEDICALLY_OBESE
     else:
         await update.message.reply_text('Invalid input. Please enter a valid age')
@@ -96,10 +97,100 @@ async def get_age(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def get_obese(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Are you medically obese?\n 1 for Yes, 0 for No')
-    user_usa = update.message.text
-    if user_usa == '1' or user_usa == '0':
-        context.user_data['obese'] = int(user_usa)
-        await update.message.text_reply(f'Medically Obese: {user_usa} - Recorded')
+    user_obese = update.message.text
+    if user_obese == '1' or user_obese == '0':
+        context.user_data['medically_obese'] = int(user_obese)
+        user_info_array.append({'medically_obese': int(user_obese)})
+        await update.message.text_reply('Response recorded.')
+        return VACCINATED
+    else:
+        await update.message.reply_text('Enter a valid answer')
+        return MEDICALLY_OBESE
+async def get_vaccinated(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('Are you vaccinated?\n 1 for Yes, 0 for No')
+    user_vacc = update.message.text
+    if user_vacc == '1' or user_vacc == '0':
+        context.user_data['vaccinated'] = int(user_vacc)
+        user_info_array.append({'vaccinated': user_vacc})
+        await update.message.text_reply('Response recorded.')
+        return ASE_LEVEL
+    else:
+        await update.message.reply_text('Enter a valid answer')
+        return VACCINATED
+    
+async def get_ASE(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('What are your Artificial Sun Exposure Levels? (0-100): ')
+    user_ASE = update.message.text
+    if user_ASE < 0 or user_ASE > 100:
+        await update.message.text_reply('Enter a number between 0 and 100')
+        return ASE_LEVEL
+    else:
+        context.user_data['ASE_Level'] = user_ASE
+        user_info_array.append({'ASE level': user_ASE})
+        await update.message.text_reply('Response recorded.')
+        return IMMUNITY_SUPP
+async def get_immunity(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.text_reply('Do you take immunity supplements?\n 1 for Yes, 0 for No')
+    user_immunity = update.message.text
+    if user_immunity == '1' or user_immunity == '0':
+        context.user_data['immunity'] = int(user_immunity)
+        user_info_array.append({'immunity': user_immunity})
+        await update.message.text_reply('Response recorded.')
+        return HEALTHY_SLEEP_CYCLE
+    else:
+        await update.message.reply_text('Enter a valid answer')
+        return IMMUNITY_SUPP
+    
+async def get_sleep_cycle(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.text_reply('Do you have a healthy sleep schedule\n 1 for Yes, 0 for No')
+    user_sleep = update.message.text
+    if user_sleep == '1' or user_sleep == '0':
+        context.user_data['healthy_sleep_cycle'] = int(user_sleep)
+        user_info_array.append({'healthy_sleep_cycle': user_sleep})
+        await update.message.text_reply('Response recorded.')
+        return ANTIBODIES
+    else:
+        await update.message.reply_text('Enter a valid answer')
+        return HEALTHY_SLEEP_CYCLE
+
+async def get_antibodies(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.text_reply('Have you been sick recently?\n 1 for Yes, 0 for No')
+    user_antibodies = update.message.text
+    if user_antibodies == '1' or user_antibodies == '0':
+        context.user_data['antibodies'] = int(user_antibodies)
+        user_info_array.append({'antibodies': user_antibodies})
+        await update.message.text_reply('Response recorded.')
+        return DIABETIC
+    else:
+        await update.message.reply_text('Enter a valid answer')
+        return ANTIBODIES
+
+async def get_diabetic(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.text_reply('Are you diabetic?\n 1 for Yes, 0 for No')
+    user_diabetic = update.message.text
+    if user_diabetic == '1' or user_diabetic == '0':
+        context.user_data['diabetic'] = int(user_diabetic)
+        user_info_array.append({'diabetic': user_diabetic})
+        await update.message.text_reply('Response recorded.')
+        return HTRY_HEART
+    else:
+        await update.message.reply_text('Enter a valid answer')
+        return DIABETIC
+    
+async def get_heart(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.text_reply('Do you have a history of heart disease\n 1 for Yes, 0 for No')
+    user_heart = update.message.text
+    if user_heart == '1' or user_heart == '0':
+        context.user_data['heart_disease'] = int(user_heart)
+        user_info_array.append({'heart_disease': user_heart})
+        await update.message.text_reply('Response recorded.')
+        return ConversationHandler.END
+    else:
+        await update.message.reply_text('Enter a valid answer')
+        return HTRY_HEART
+async def exam_cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.text_reply('Your examination has been forfeit, type /examination to perform the examination again.')
+    return ConversationHandler.END
 
 #Responses 
 def handle_response(text: str) -> str:
@@ -157,15 +248,15 @@ if __name__ == '__main__':
     information_handler = ConversationHandler(
         entry_points = [CommandHandler('examination', examination_command)],
         states ={
-            AGE:
-            MEDICALLY_OBESE:
-            VACCINATED:
-            ASE_LEVEL:
-            IMMUNITY_SUPP:
-            HEALTHY_SLEEP_CYCLE:
-            ANTIBODIES:
-            DIABETIC:
-            HTRY_HEART:
+            AGE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_age)],
+            MEDICALLY_OBESE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_obese)],
+            VACCINATED: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_vaccinated)],
+            ASE_LEVEL: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_ASE)],
+            IMMUNITY_SUPP: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_immunity)],
+            HEALTHY_SLEEP_CYCLE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_sleep_cycle)],
+            ANTIBODIES: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_antibodies)],
+            DIABETIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_diabetic)],
+            HTRY_HEART: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_heart)],
         },
         fallbacks = [CommandHandler('examCancel', exam_cancel_command)]
     )
