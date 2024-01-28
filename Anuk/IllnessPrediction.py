@@ -18,7 +18,7 @@ lr.fit(X_train,Y_train)
 
 data_new = X_train[:10]
 
-userDataFile=open("user_info.txt", 'r')
+userDataFile=open("reg_result.txt", 'r')
 userData=userDataFile.readline()
 dataSplit=userData.split()
 
@@ -64,7 +64,7 @@ print(illnessResult)
 
 userDataFile.close()
 
-resultFile = open('result.txt', 'w')
+resultFile = open('illness_result.txt', 'w')
 result=illnessResult.astype(str)
 resultFile.write(result[0])
 resultFile.close()  
