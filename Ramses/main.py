@@ -7,10 +7,12 @@ TOKEN: Final = '6818698464:AAExduA8qUwEWa3wl1i_M2gK3OVF2Uv0-Fk'
 BOT_USERNAME: Final = '@EunaiBot'
 NAME, ID_NUMBER = range(2)
 AGE, MEDICALLY_OBESE, VACCINATED, ASE_LEVEL, IMMUNITY_SUPP, HEALTHY_SLEEP_CYCLE, ANTIBODIES, DIABETIC, HTRY_HEART = range(9)
+USER_INFO_FILE_PATH = '/Users/hearth/BCHACKS_5.0/Ramses/eunaiBot/reg_result.txt' #extracting user info 
 #Arrays
 commands = [
     ('/start', 'Intializes the bot'), ('/help', 'Lists all known commands'), ('/status', 'Provides your current health status'), 
-    ('/register', 'Intiates registration process'), ('/regCancel', 'Cancels the registration process'), ('/examination', 'Begins your risk assesment')
+    ('/register', 'Intiates registration process'), ('/regCancel', 'Cancels the registration process'), ('/examination', 'Begins your risk assesment'),
+    ('examCancel', 'Terminates the examination process')
 
 ]
 user_data_array = [] #stores name and id, currently UNUSED
@@ -20,10 +22,11 @@ user_info_array = [] #stores data for back-end
 def format_help_command(commands):
     return '\n'.join([f'{command}: {description}' for command, description in commands])
 
-def to_text_file(user_data): #stores data into txt file then backend prediction
-    with open('user_info.txt', 'w') as file:
-        for user_data in user_data_array:
-            file.write 
+def user_info_to_file(file_path, user_info):
+    with open(file_path,'w') as file:
+        for data in user_info:
+            for key, value in data.items():
+                file.write(f'{value} ')
 #Commands
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Hello!, I am Eunai. How can I help you today?\n')
@@ -46,6 +49,8 @@ async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 #Registration command, and linking with convo handler
 async def register_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Beginning registration process')
+    await asyncio.sleep(3)
+    await update.message.reply_text('IMPORTANT: /regCancel to terminate ongoing registration process')
     await update.message.reply_text('....\n....\n.....\n......')
     await update.message.reply_text('Enter your full legal name:')
     return NAME
@@ -63,7 +68,6 @@ async def get_id_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     userId_msg = f'\n Username: {context.user_data["name"]}\nID_Number: {user_id}'
     user_name = context.user_data.get('name', 'not provided')
     user_data_array.append({'Name': user_name}, {'ID_Number': user_id}) #stores username and id into user_data array
-
     await update.message.reply_text(completion_msg)
     await update.message.reply_text(userId_msg)
     return ConversationHandler.END
@@ -74,6 +78,7 @@ async def regCancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def examination_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('We will begin your analysis now.') #actual bullshit
+    await update.message.reply_text('IMPORTANT: /examCancel to terminate ongoing exam process')
     await update.message.reply_text('\nAs per section 296 of the Space Station Criminal Code. Individuals must answer truthfully')
     await update.message.reply_text('\nIndividuals found with fraudulent data will be prosecuted and subject to interrogation and excecution')
     await update.message.reply_text('\nUphold your integrity. May the stars bless you, we are watching')
@@ -88,11 +93,13 @@ async def get_age(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if user_age > 0:
             is_over_65 = 1 if user_age > 65 else 0
             is_under_5 = 1 if user_age < 5 else 0
+            user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
             age_temp = {
                 'age' : user_age, 'is_over_65': is_over_65, 'is_under_5' : is_under_5
             }
             user_info_array.append(age_temp)
             await update.message.reply_text('Response recorded.')
+            user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
             await asyncio.sleep(3)
             await update.message.reply_text('Are you medically obese?\n 1 for Yes, 0 for No')
 
@@ -107,6 +114,7 @@ async def get_obese(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['medically_obese'] = int(user_obese)
         user_info_array.append({'medically_obese': int(user_obese)})
         await update.message.reply_text('Response recorded.')
+        user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
         await asyncio.sleep(3)
         await update.message.reply_text('Are you vaccinated?\n 1 for Yes, 0 for No')
         return VACCINATED
@@ -120,6 +128,7 @@ async def get_vaccinated(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['vaccinated'] = int(user_vacc)
         user_info_array.append({'vaccinated': user_vacc})
         await update.message.reply_text('Response recorded.')
+        user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
         await asyncio.sleep(3)
         await update.message.reply_text('What are your Artificial Sun Exposure Levels? (0-100): ')
         return ASE_LEVEL
@@ -137,6 +146,7 @@ async def get_ASE(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['ASE_Level'] = user_ASE
         user_info_array.append({'ASE level': user_ASE})
         await update.message.reply_text('Response recorded.')
+        user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
         await asyncio.sleep(3)
         await update.message.reply_text('Do you take immunity supplements?\n 1 for Yes, 0 for No')
         return IMMUNITY_SUPP
@@ -147,6 +157,8 @@ async def get_immunity(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['immunity'] = int(user_immunity)
         user_info_array.append({'immunity': user_immunity})
         await update.message.reply_text('Response recorded.')
+        user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
+        await asyncio.sleep(3)
         await update.message.reply_text('Do you have a healthy sleep schedule\n 1 for Yes, 0 for No')
 
         return HEALTHY_SLEEP_CYCLE
@@ -160,6 +172,7 @@ async def get_sleep_cycle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['healthy_sleep_cycle'] = int(user_sleep)
         user_info_array.append({'healthy_sleep_cycle': user_sleep})
         await update.message.reply_text('Response recorded.')
+        user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
         await asyncio.sleep(3)
         await update.message.reply_text('Have you been sick recently?\n 1 for Yes, 0 for No')
         return ANTIBODIES
@@ -173,6 +186,7 @@ async def get_antibodies(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['antibodies'] = int(user_antibodies)
         user_info_array.append({'antibodies': user_antibodies})
         await update.message.reply_text('Response recorded.')
+        user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
         await asyncio.sleep(3)
         await update.message.reply_text('Are you diabetic?\n 1 for Yes, 0 for No')
         return DIABETIC
@@ -186,6 +200,7 @@ async def get_diabetic(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['diabetic'] = int(user_diabetic)
         user_info_array.append({'diabetic': user_diabetic})
         await update.message.reply_text('Response recorded.')
+        user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
         await asyncio.sleep(3)
         await update.message.reply_text('Do you have a history of heart disease\n 1 for Yes, 0 for No')
         return HTRY_HEART
@@ -199,6 +214,8 @@ async def get_heart(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['heart_disease'] = int(user_heart)
         user_info_array.append({'heart_disease': user_heart})
         await update.message.reply_text('Response recorded.')
+        user_info_to_file(USER_INFO_FILE_PATH, user_info_array)
+        await asyncio.sleep(3)
         await update.message.reply_text('Your examination is now complete. Congratulations!')
         return ConversationHandler.END
     else:
