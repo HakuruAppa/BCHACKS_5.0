@@ -13,7 +13,7 @@ pyarrow
 python
 telegram
 python-telegram-bot
-
+asyncio
 
 
 
