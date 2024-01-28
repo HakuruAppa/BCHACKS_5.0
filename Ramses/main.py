@@ -11,6 +11,7 @@ commands = [
     ('/register', 'Intiates registration process'), ('regCancel', 'Cancels the registration process'),
 
 ]
+user_data = [] #stores user information
 
 #Misc functions, formatting etc
 def format_help_command(commands):
@@ -27,6 +28,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     help_message = ('Here are the list of commands I know')
     await update.message.reply_text(help_message)
     await update.message.reply_text(commands_list)
+
 async def custom_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Custom Command')
 
@@ -37,6 +39,8 @@ async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 #Registration command, and linking with convo handler
 async def register_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Beginning registration process')
+    await update.message.reply_text('....\n....\n.....\n......')
+    await update.message.reply_text('Enter your full legal name:')
     return NAME
 
 async def get_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -50,6 +54,9 @@ async def get_id_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['id_number'] = user_id
     completion_msg = f'Registration is now complete.\nVerify your information. If you need to make changes, re-initiate the registration process' 
     userId_msg = f'\n Username: {context.user_data["name"]}\nID_Number: {user_id}'
+    user_name = context.user_data.get('name', 'not provided')
+    user_data.append({'Name': user_name}, {'ID_Number': user_id}) #stores username and id into user_data array
+
     await update.message.reply_text(completion_msg)
     await update.message.reply_text(userId_msg)
     return ConversationHandler.END
